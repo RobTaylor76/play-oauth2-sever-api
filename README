@@ -3,6 +3,13 @@ This is your new Play application
 
 This file will be packaged with your application, when using `play dist`.
 
+Implements the Scala Oauth2 provider in Java project.
+
+references:
+https://github.com/nulab/scala-oauth2-provider
+https://github.com/oyediyildiz/scala-oauth2-provider-example
+
+Here are the MYSQL commands to create the tables...
 
 
 
