@@ -1,0 +1,111 @@
+This is your new Play application
+=====================================
+
+This file will be packaged with your application, when using `play dist`.
+
+
+
+
+drop table IF EXISTS oauth2_client_grant_type;
+drop table IF EXISTS oauth2_grant_type;
+drop table IF EXISTS oauth2_access_token;
+
+drop table IF EXISTS oauth2_auth_code;
+drop table IF EXISTS oauth2_client;
+drop table IF EXISTS user;
+
+CREATE TABLE user
+(
+  id INT NOT NULL AUTO_INCREMENT,
+  username varchar(100),
+  email varchar(100),
+  password varchar(100),
+  CONSTRAINT pk_user PRIMARY KEY (id),
+  CONSTRAINT ix_user_email_unique UNIQUE (email),
+  CONSTRAINT ix_user_username_unique UNIQUE (username)
+);
+
+
+CREATE TABLE oauth2_client
+(
+  id varchar(80) NOT NULL,
+  secret varchar(80),
+  redirect_uri varchar(2000),
+  scope varchar(2000),
+  CONSTRAINT pk_client PRIMARY KEY (id)
+);
+
+
+
+CREATE TABLE oauth2_auth_code
+(
+  authorization_code varchar(40) NOT NULL,
+  user_id integer NOT NULL,
+  redirect_uri varchar(2000),
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
+  scope varchar(1000),
+  client_id varchar(80) NOT NULL,
+  expires_in integer NOT NULL,
+  CONSTRAINT pk_auth_code PRIMARY KEY (authorization_code),
+  CONSTRAINT fk_auth_code_client_id FOREIGN KEY (client_id)
+      REFERENCES oauth2_client(id) ,
+  CONSTRAINT fk_auth_code_user_id_user_id FOREIGN KEY (user_id)
+      REFERENCES user (id) 
+);
+
+
+CREATE TABLE oauth2_access_token
+(
+  access_token varchar(60) NOT NULL,
+  refresh_token varchar(60),
+  user_id integer NOT NULL,
+  client_id varchar(80) NOT NULL,
+  scope varchar(2000),
+  expires_in integer NOT NULL,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
+  CONSTRAINT pk_access_token PRIMARY KEY (access_token),
+  CONSTRAINT fk_access_token_client_id FOREIGN KEY (client_id)
+      REFERENCES oauth2_client (id) ,
+  CONSTRAINT fk_access_token_user_id FOREIGN KEY (user_id)
+      REFERENCES user (id) 
+);
+
+
+CREATE TABLE oauth2_grant_type
+(
+  id integer NOT NULL,
+  grant_type varchar(20) NOT NULL,
+  CONSTRAINT pk_grant_type PRIMARY KEY (id)
+);
+
+
+
+CREATE TABLE oauth2_client_grant_type
+(
+  grant_type_id integer NOT NULL,
+  client_id varchar(80) NOT NULL,
+  CONSTRAINT pk_client_grant_type PRIMARY KEY (grant_type_id, client_id),
+  CONSTRAINT fk_client_grant_type_client_id FOREIGN KEY (client_id)
+      REFERENCES oauth2_client (id),
+  CONSTRAINT fk_client_grant_type_grant_type_id FOREIGN KEY (grant_type_id)
+      REFERENCES oauth2_grant_type (id)
+);
+
+
+-- insert grant_types in grant_type configuration table
+INSERT INTO oauth2_grant_type (id, grant_type) 
+VALUES (1, 'authorization_code'),
+        (2, 'client_credentials'),
+        (3, 'password'),
+        (4, 'refresh_token');
+
+
+-- sample data...
+-- create sample user
+INSERT INTO user (username, email, password) VALUES ('test_user', 'test_email', 'test_password');
+
+-- create sample client
+INSERT INTO oauth2_client (id, secret, redirect_uri, scope) VALUES ('test_client_id', 'test_client_secret', 'http://xxx', 'read write update');
+
+-- associate some grant_types to client
+INSERT INTO oauth2_client_grant_type VALUES (1, 'test_client_id'),(2, 'test_client_id'), (3, 'test_client_id');
