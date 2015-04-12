@@ -11,7 +11,7 @@ import scalaoauth2.provider._
  * Created by rob on 11/04/15.
  */
 
-
+import scala.concurrent.ExecutionContext.Implicits.global
 
 class OauthAuthentication[A](val user: AuthInfo[User],
                                 request: Request[A]) extends WrappedRequest[A](request)

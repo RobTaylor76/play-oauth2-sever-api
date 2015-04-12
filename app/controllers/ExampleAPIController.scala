@@ -6,12 +6,10 @@ import scalaoauth2.provider.OAuth2Provider
 import oauth.{OauthAuthentication, MyDataHandler}
 
 object ExampleAPIController extends Controller with OAuth2Provider {
-  def index = Action { implicit request =>
-    authorize(new MyDataHandler()) { authInfo =>
-      val user = authInfo.user // User is defined on your system
+  def index = OauthAuthentication { request =>
+      val user = request.user // User is defined on your system
       // access resource for the user
-      Ok
-    }
+      Ok(JsString(user.user.username))
   }
 
   def oauth = OauthAuthentication { implicit request =>
