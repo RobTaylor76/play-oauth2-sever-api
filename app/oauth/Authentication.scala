@@ -13,7 +13,7 @@ import scalaoauth2.provider._
 
 import scala.concurrent.ExecutionContext.Implicits.global
 
-class OauthAuthentication[A](val user: AuthInfo[User],
+class OauthAuthentication[A](val authInfo: AuthInfo[User],
                                 request: Request[A]) extends WrappedRequest[A](request)
 
 object OauthAuthentication extends ActionBuilder[OauthAuthentication]  with OAuth2Provider {

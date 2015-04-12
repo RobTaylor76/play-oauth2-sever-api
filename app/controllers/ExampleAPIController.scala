@@ -7,9 +7,9 @@ import oauth.{OauthAuthentication, MyDataHandler}
 
 object ExampleAPIController extends Controller with OAuth2Provider {
   def index = OauthAuthentication { request =>
-      val user = request.user // User is defined on your system
+      val authInfo = request.authInfo // User is defined on your system
       // access resource for the user
-      Ok(JsString(user.user.username))
+      Ok(JsString(authInfo.user.username))
   }
 
   def oauth = OauthAuthentication { implicit request =>
